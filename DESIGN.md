@@ -28,15 +28,21 @@ Schema:
 
 - `_id` (ID)
 - `name` (String)
-- `day_plans` ([Day Plan](#day-plan)[7])
+- `day_plans` (Array[7])
 	- *Holds plans of exercise to complete in a day*
 	- *If an index is empty the day is considered a rest day*
-	- `exercise_id` (ID)
-	- `min_exercise_count` ([Exercise Count](#exercise-count))
-		- Optional
-		- If not included then the plan does not include a range. Instead the
-			`max_exercise_count` will be treated as the prescribed amount
-	- `max_exercise_count` ([Exercise Count](#exercise-count))
+	- *Indices are mapped to days of the week via the 
+		[Days Of Week](#days-of-week) enum*
+	- `planned_exercises` (Object)
+		- `exercise_id` (ID)
+		- `min_exercise_count` ([Exercise Count](#exercise-count))
+			- Optional
+			- If not included then the plan does not include a range. 
+				Instead the `max_exercise_count` will be treated as the 
+				prescribed amount
+			- If included the plan will prescribe a number between the min
+				and max
+		- `max_exercise_count` ([Exercise Count](#exercise-count))
 - `archived` (Boolean)
 	- Indicates that the plan is no longer relevant and only exists so past
 		[Exercise Records](#exercise-record) remain valid
