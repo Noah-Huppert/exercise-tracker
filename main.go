@@ -26,7 +26,7 @@ func main() {
 
 	// {{{1 Connect to MongoDB
 	// connect
-	mongoClient, err := mongo.NewClient(fmt.Sprintf("mongodb://%s:%d",
+	mongoClient, err := mongo.Connect(ctx, fmt.Sprintf("mongodb://%s:%d",
 		cfg.MongoDBHost, cfg.MongoDBPort))
 
 	// ping
