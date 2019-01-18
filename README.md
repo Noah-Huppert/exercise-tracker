@@ -1,5 +1,5 @@
-# Workout Tracker
-Track workout.
+# Exercise Tracker
+Track exercises.
 
 # Table Of Contents
 - [Overview](#overview)
