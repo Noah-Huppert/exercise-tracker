@@ -10,4 +10,4 @@ Features:
 - Plan workouts
 - Record workouts
 
-[DESIGN.md](design.md)
+[DESIGN.md](DESIGN.md)
