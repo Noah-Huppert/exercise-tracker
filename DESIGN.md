@@ -11,9 +11,10 @@ Workout planner design.
 	- [Exercise Count](#exercise-count)
 	- [Day Of Week](#day-of-week)
 - [API](#api)
-	- [Muscle Group Endpoints](#muscle-group-endpoints)
+	- [Plan Endpoints](#plan-endpoints)
+	- [Exercise Record Endpoints](#exercise-record-endpoints)
 	- [Exercise Endpoints](#exercise-endpoints)
-	- [Day Plan Endpoints](#day-plan-endpoints)
+	- [Muscle Group Endpoints](#muscle-group-endpoints)
 
 # Collections
 Database models for document store.
@@ -118,15 +119,42 @@ Request and response bodies are JSON formatted.
 
 Models returned by endpoints will resolve any foreign keys.
 
-## Muscle Group Endpoints
-### Get All Muscle Groups
+## Plan Endpoints
+### Get All Plans
 #### Request
-GET `/api/v0/muscle_groups`
+GET `/api/v0/plans`
 
 #### Response
 Body:
 
-- `muscle_groups` (Muscle Group[])
+- `plans` ([Plan](#plan)[])
+
+## Exercise Record Endpoints
+### Get All Exercise Records
+#### Request
+GET `/api/v0/exercise_records`
+
+#### Response
+Body:
+
+- `exercise_records` ([Exercise Record](#exercise-record)[])
+
+### Create Exercise Record
+#### Request
+POST `/api/v0/exercise_records`
+
+Body:
+
+- `plan_id` (ID)
+- `exercise_id` (ID)
+- `exercise_count` ([Exercise Count](#exercise-count))
+- `date_time` (Date Time)
+
+#### Response
+Body:
+
+- `exercise_records` ([Exercise Record](#exercise-record))
+	- Created record
 
 ## Exercise Endpoints
 ### Get All Exercises
@@ -138,17 +166,12 @@ Body:
 
 - `exercises` (Exercise[])
 
-## Day Plan Endpoints
-### Get Day Plan
+## Muscle Group Endpoints
+### Get All Muscle Groups
 #### Request
-GET `/api/v0/day_plans/:id`
-
-Query parameters:
-
-- `:id` (Integer)
-	- ID of day plan to return
+GET `/api/v0/muscle_groups`
 
 #### Response
 Body:
 
-- `day_plan` (Day Plan)
+- `muscle_groups` (Muscle Group[])
