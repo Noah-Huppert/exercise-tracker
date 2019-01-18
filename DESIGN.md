@@ -2,117 +2,147 @@
 Workout planner design.
 
 # Table Of Contents
-- [Models](#models)
-	- [Muscle Group](#muscle-group)
-	- [Exercise](#exercise)
-	- [Exercise Count](#exercise-count)
-	- [Day Plan](#day-plan)
-	- [Day Plan Exercise](#day-plan-exercise)
+- [Collections](#collections)
 	- [Plan](#plan)
-	- [Day Of Week](#day-of-week)
 	- [Exercise Record](#exercise-record)
+	- [Exercise](#exercise)
+	- [Muscle Group](#muscle-group)
+- [Sub Schemas](#sub-schemas)
+	- [Exercise Count](#exercise-count)
+	- [Day Of Week](#day-of-week)
+- [API](#api)
+	- [Muscle Group Endpoints](#muscle-group-endpoints)
+	- [Exercise Endpoints](#exercise-endpoints)
+	- [Day Plan Endpoints](#day-plan-endpoints)
 
-# Models
-Database models for row store.  
+# Collections
+Database models for document store.
 
-All models have a few properties in common:
+## Plan
+Plan to complete exercises during the week.
 
-- Have a primary key field name id
-- All primary and foreign keys are of type integer and serial
-- All fields can not be null unless specified otherwise
+Immutable once [Exercise Records](#exercise-record) which reference this 
+plan exist.
 
-## Muscle Group
-Identifies a group of muscles on the body.  
+Schema:
 
-Rows are seeded.
-
-Columns:
-
+- `_id` (ID)
 - `name` (String)
+- `day_plans` ([Day Plan](#day-plan)[7])
+	- *Holds plans of exercise to complete in a day*
+	- *If an index is empty the day is considered a rest day*
+	- `exercise_id` (ID)
+	- `min_exercise_count` ([Exercise Count](#exercise-count))
+		- Optional
+		- If not included then the plan does not include a range. Instead the
+			`max_exercise_count` will be treated as the prescribed amount
+	- `max_exercise_count` ([Exercise Count](#exercise-count))
+- `archived` (Boolean)
+	- Indicates that the plan is no longer relevant and only exists so past
+		[Exercise Records](#exercise-record) remain valid
+
+## Exercise Record
+Recording of an exercise which took place.
+
+Schema:
+
+- `_id` (ID)
+- `plan_id` (ID)
+- `exercise_id` (ID)
+- `exercise_count` ([Exercise Count](#exercise-count))
+- `date_time` (Date Time)
+- `day_of_week` ([Day Of Week](#day-of-week))
 
 ## Exercise
 Identifies a movement which targets a muscle group.
 
-Rows are seeded.
+Values are seeded.
 
-Columns:
+Schema:
 
 - `name` (String)
 - `includes_weight` (Boolean)
 	- Indicates if an Exercise Count must have a weight or not
 - `muscle_group_id`
 
+## Muscle Group
+Identifies a group of muscles on the body.  
+
+Values are seeded.
+
+Schema:
+
+- `name` (String)
+
+# Sub Schemas
+Schemas used inside collection schemas.
+
 ## Exercise Count
 Count of sets and repetitions of an exercise.
 
-Columns:
+Schema:
 
-- `exercise_id`
+- `exercise_id` (ID)
 - `sets` (Integer)
 - `repetitions` (Integer)
 - `weight_pounds` (Integer, Nullable)
-	- Optional, required if the associated Exercise's includes_weight field
-		is true
-
-## Day Plan
-A plan to complete certain exercises on a day.
-
-Columns:
-
-- `name` (String)
-
-## Day Plan Exercise
-Exercise in a day plan.
-
-Columns:
-
-- `day_plan_id`
-- `exercise_id`
-- `min_exercise_count_id` (Nullable)
-	- Optional, if not included then the plan exercise does not include
-		a range
-- `max_exercise_count_id`
-
-## Plan
-Plan for a week.
-
-All `_day_plan_id` fields a nullable. If they are null it means that day is a 
-rest day.
-
-Plans and related resources are immutable once an Exercise Record exists which 
-points towards the Plan.
-
-Columns:
-
-- `name` (String)
-- `monday_day_plan_id`
-- `tuesday_day_plan_id`
-- `wednesday_day_plan_id`
-- `thursday_day_plan_id`
-- `friday_day_plan_id`
-- `saturday_day_plan_id`
-- `sunday_day_plan_id`
+	- Optional
+	- Required if the associated exercise's includes_weight field is true
 
 ## Day Of Week
-Enumerations which indicates the day of the week.
+Enumeration which indicates the day of the week. Maps day of the week to a 
+number.
 
 Values:
 
-- `monday`
-- `tuesday`
-- `wednesday`
-- `thursday`
-- `friday`
-- `saturday`
-- `sunday`
+- `monday=0`
+- `tuesday=1`
+- `wednesday=2`
+- `thursday=3`
+- `friday=4`
+- `saturday=5`
+- `sunday=6`
 
-## Exercise Record
-Recording of an exercise which tool place.
+# API
+Basic HTTP API.
 
-Columns:
+Authentication method TBD.
 
-- `plan_id`
-- `day_plan_exercise_id`
-- `date_time` (Date Time)
-- `day_of_week` (Day Of Week)
-- `exercise_count_id`
+Request and response bodies are JSON formatted.
+
+Models returned by endpoints will resolve any foreign keys.
+
+## Muscle Group Endpoints
+### Get All Muscle Groups
+#### Request
+GET `/api/v0/muscle_groups`
+
+#### Response
+Body:
+
+- `muscle_groups` (Muscle Group[])
+
+## Exercise Endpoints
+### Get All Exercises
+#### Request
+GET `/api/v0/exercises`
+
+#### Response
+Body:
+
+- `exercises` (Exercise[])
+
+## Day Plan Endpoints
+### Get Day Plan
+#### Request
+GET `/api/v0/day_plans/:id`
+
+Query parameters:
+
+- `:id` (Integer)
+	- ID of day plan to return
+
+#### Response
+Body:
+
+- `day_plan` (Day Plan)
